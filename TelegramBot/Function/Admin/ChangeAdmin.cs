@@ -8,7 +8,7 @@ using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 using static AutoTrack.Config.Logger;
 
-namespace AutoTrack.Telegram.Function
+namespace AutoTrack.TelegramBot.Function.Admin
 {
   /// <summary>
   /// Класс для управления процессом смены администратора.
@@ -62,13 +62,12 @@ namespace AutoTrack.Telegram.Function
 
         await TelegramBotHandler.SendMessageAsync(botClient, chatId, "Администратор успешно изменён.");
         await TelegramBotHandler.SendMessageAsync(botClient, pendingAdminId.Value, "Вы назначены на роль администратора. Чтобы начать работу, нажмите /start.");
-        pendingAdminId = null;
       }
       else if (callbackData == "cancel_change")
       {
-        pendingAdminId = null;
         await TelegramBotHandler.SendMessageAsync(botClient, chatId, "Смена администратора отменена.");
       }
+      pendingAdminId = null;
     }
 
     /// <summary>

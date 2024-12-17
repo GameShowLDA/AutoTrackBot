@@ -29,15 +29,15 @@ namespace AutoTrack.Tests
     public void SeedData()
     {
       LogInfo("Проверка наличия пользователей в базе данных.");
-      if (!_context.Users.Any())
+      if (!_context.Clients.Any())
       {
         LogInfo("Пользователи не найдены, добавляем новых пользователей.");
-        var userFaker = new Faker<User>()
+        var userFaker = new Faker<Client>()
             .RuleFor(u => u.Name, f => f.Name.FullName())
             .RuleFor(u => u.Created, f => f.Date.Past());
 
         var users = userFaker.Generate(5);
-        _context.Users.AddRange(users);
+        _context.Clients.AddRange(users);
         _context.SaveChanges();
         LogInfo("Пользователи успешно добавлены.");
       }
@@ -46,7 +46,7 @@ namespace AutoTrack.Tests
         LogInfo("Пользователи уже существуют в базе данных.");
       }
 
-      var userIds = _context.Users.Select(u => u.Id).ToList();
+      var userIds = _context.Clients.Select(u => u.Id).ToList();
 
       if (!_context.Cars.Any())
       {

@@ -32,7 +32,7 @@ namespace AutoTrack.Utils
 
     private void PrintUsers()
     {
-      var users = _context.Users.ToList();
+      var users = _context.Clients.ToList();
       var table = new ConsoleTable("ID", "Name", "Created");
 
       foreach (var user in users)

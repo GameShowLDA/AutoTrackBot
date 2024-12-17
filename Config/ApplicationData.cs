@@ -17,8 +17,10 @@
     /// </summary>
     public static Config ConfigApp { get; private set; }
 
+    /// <summary>
+    /// Контекст базы данных приложения.
+    /// </summary>
     public static ApplicationDbContext DbContext { get; set; }
-
 
     /// <summary>
     /// Статический конструктор для инициализации конфигурации приложения.

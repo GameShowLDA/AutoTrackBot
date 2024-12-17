@@ -2,7 +2,7 @@
 {
   using AutoTrack.Config;
   using AutoTrack.DataBase;
-  using AutoTrack.Telegram;
+  using AutoTrack.TelegramBot;
   using AutoTrack.Tests;
   using AutoTrack.Utils;
   using static Config.Logger;

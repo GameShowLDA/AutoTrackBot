@@ -13,7 +13,7 @@ using static AutoTrack.Config.Logger;
 using AutoTrack.Core;
 using System.Text;
 
-namespace AutoTrack.Telegram.Function
+namespace AutoTrack.TelegramBot.Function
 {
   /// <summary>
   /// Класс для отображения свойств сущностей в базе данных.
@@ -30,7 +30,7 @@ namespace AutoTrack.Telegram.Function
     public static async Task DisplayPropertyButtonsAsync(ITelegramBotClient botClient, long chatId)
     {
       var properties = GetProperties(typeof(Car))
-          .Concat(GetProperties(typeof(Model.User)))
+          .Concat(GetProperties(typeof(Model.Client)))
           .Distinct()
           .ToList();
 
@@ -83,9 +83,15 @@ namespace AutoTrack.Telegram.Function
       }
     }
 
+    /// <summary>
+    /// Ищет пользователей по заданному тексту.
+    /// </summary>
+    /// <param name="botClient">Клиент Telegram бота.</param>
+    /// <param name="chatId">Идентификатор чата.</param>
+    /// <param name="searchText">Текст для поиска.</param>
     private static async Task SearchUsersAsync(ITelegramBotClient botClient, long chatId, string searchText)
     {
-      var users = UserService.SearchUsers(_selectedProperty, searchText);
+      var users = ClientService.SearchClient(_selectedProperty, searchText);
       StringBuilder sb = new StringBuilder();
       List<CallbackModel> callbackModels = new List<CallbackModel>();
       foreach (var user in users)
@@ -109,6 +115,12 @@ namespace AutoTrack.Telegram.Function
       await TelegramBotHandler.SendMessageAsync(botClient, chatId, sb.ToString(), TelegramBotHandler.GetInlineKeyboardMarkupAsync(callbackModels));
     }
 
+    /// <summary>
+    /// Ищет автомобили по заданному тексту.
+    /// </summary>
+    /// <param name="botClient">Клиент Telegram бота.</param>
+    /// <param name="chatId">Идентификатор чата.</param>
+    /// <param name="searchText">Текст для поиска.</param>
     private static async Task SearchCarsAsync(ITelegramBotClient botClient, long chatId, string searchText)
     {
       var carsList = CarService.SearchCars(_selectedProperty, searchText);
@@ -117,7 +129,7 @@ namespace AutoTrack.Telegram.Function
       foreach (var car in carsList)
       {
         LogInfo($"Брэнд машины: {car.Brand}, Модель: {car.Model}");
-        var usersList = UserService.SearchUsers("Id", car.UserId.ToString());
+        var usersList = ClientService.SearchClient("Id", car.UserId.ToString());
         foreach (var user in usersList)
         {
           sb.AppendLine($"Имя клиента: {user.Name}");
@@ -135,6 +147,11 @@ namespace AutoTrack.Telegram.Function
       await TelegramBotHandler.SendMessageAsync(botClient, chatId, sb.ToString(), TelegramBotHandler.GetInlineKeyboardMarkupAsync(callbackModels));
     }
 
+    /// <summary>
+    /// Обрабатывает проверку работы по заданному идентификатору и отправляет результаты в чат.
+    /// </summary>
+    /// <param name="botClient">Клиент Telegram бота.</param>
+    /// <param name="callbackQuery">Данные callback-запроса, содержащие идентификатор работы.</param>
     public static async Task HandleCheckWorkAsync(ITelegramBotClient botClient, CallbackQuery callbackQuery)
     {
       var carIdString = callbackQuery.Data.Replace("/checkWork_id", "");
@@ -149,8 +166,14 @@ namespace AutoTrack.Telegram.Function
           sb.AppendLine($"Дата: {work.Date}");
           sb.AppendLine(string.Empty);
         }
-        
-        await TelegramBotHandler.SendMessageAsync(botClient, callbackQuery.Message.Chat.Id, sb.ToString(), TelegramBotHandler.GetInlineKeyboardMarkupAsync(new CallbackModel("На главную", "/start")), callbackQuery.Message.MessageId);
+
+        var callbackModels = new List<CallbackModel>
+        {
+            new CallbackModel("На главную", "/start"),
+            new CallbackModel("Добавить работу", $"/addWork_{carIdString}"),
+        };
+
+        await TelegramBotHandler.SendMessageAsync(botClient, callbackQuery.Message.Chat.Id, sb.ToString(), TelegramBotHandler.GetInlineKeyboardMarkupAsync(callbackModels), callbackQuery.Message.MessageId);
       }
       else
       {
@@ -166,7 +189,7 @@ namespace AutoTrack.Telegram.Function
     /// <returns>Название таблицы для поиска.</returns>
     private static string DetermineTable(string property)
     {
-      if (HasProperty(typeof(Model.User), property))
+      if (HasProperty(typeof(Model.Client), property))
       {
         return "User";
       }

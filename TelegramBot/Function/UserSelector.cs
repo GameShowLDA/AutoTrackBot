@@ -6,7 +6,7 @@ using Telegram.Bot;
 using Telegram.Bot.Types;
 using static AutoTrack.Config.Logger;
 
-namespace AutoTrack.Telegram.Function
+namespace AutoTrack.TelegramBot.Function
 {
   /// <summary>
   /// Класс для отображения существующих пользователей в базе данных.
@@ -21,7 +21,7 @@ namespace AutoTrack.Telegram.Function
     public static async Task DisplayUsersAsync(ITelegramBotClient botClient, long chatId, Message message)
     {
       using var context = new ApplicationDbContext();
-      var users = context.Users.ToList();
+      var users = context.Clients.ToList();
 
       if (!users.Any())
       {
@@ -42,6 +42,11 @@ namespace AutoTrack.Telegram.Function
       await TelegramBotHandler.SendMessageAsync(botClient, chatId, messageBuilder.ToString(), TelegramBotHandler.GetInlineKeyboardMarkupAsync(callbackModels));
     }
 
+    /// <summary>
+    /// Обрабатывает выбор пользователя.
+    /// </summary>
+    /// <param name="botClient">Клиент Telegram бота.</param>
+    /// <param name="callbackQuery">Данные callback-запроса.</param>
     public static async Task HandleSelectUserAsync(ITelegramBotClient botClient, CallbackQuery callbackQuery)
     {
       var userIdString = callbackQuery.Data.Replace("/selectUser_id", "");
@@ -71,6 +76,11 @@ namespace AutoTrack.Telegram.Function
       }
     }
 
+    /// <summary>
+    /// Обрабатывает выбор автомобиля.
+    /// </summary>
+    /// <param name="botClient">Клиент Telegram бота.</param>
+    /// <param name="callbackQuery">Данные callback-запроса.</param>
     public static async Task HandleSelectCarAsync(ITelegramBotClient botClient, CallbackQuery callbackQuery)
     {
       var carIdString = callbackQuery.Data.Replace("/selectCar_id", "");
@@ -86,7 +96,13 @@ namespace AutoTrack.Telegram.Function
           sb.AppendLine(string.Empty);
         }
 
-        await TelegramBotHandler.SendMessageAsync(botClient, callbackQuery.Message.Chat.Id, sb.ToString(), TelegramBotHandler.GetInlineKeyboardMarkupAsync(new CallbackModel("На главную", "/start")), callbackQuery.Message.MessageId);
+        var callbackModels = new List<CallbackModel>
+        {
+            new CallbackModel("На главную", "/start"),
+            new CallbackModel("Добавить работу", $"/addWork_{carIdString}"),
+        };
+
+        await TelegramBotHandler.SendMessageAsync(botClient, callbackQuery.Message.Chat.Id, sb.ToString(), TelegramBotHandler.GetInlineKeyboardMarkupAsync(callbackModels), callbackQuery.Message.MessageId);
       }
       else
       {

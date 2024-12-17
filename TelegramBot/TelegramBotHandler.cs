@@ -1,4 +1,6 @@
-﻿using AutoTrack.Model;
+﻿using AutoTrack.Config;
+using AutoTrack.Core;
+using AutoTrack.Model;
 using AutoTrack.Utils;
 using System.Text;
 using Telegram.Bot;
@@ -9,7 +11,7 @@ using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 using static AutoTrack.Config.Logger;
 
-namespace AutoTrack.Telegram
+namespace AutoTrack.TelegramBot
 {
   public partial class TelegramBotHandler
   {
@@ -59,6 +61,14 @@ namespace AutoTrack.Telegram
     /// <param name="cancellationToken">Токен отмены.</param>
     private async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
     {
+      var chatId = update.Message?.Chat.Id ?? update.CallbackQuery?.Message.Chat.Id ?? 0;
+      if (chatId != ApplicationData.ConfigApp.AdminId && !UserService.GetResultVerificationUser(chatId) && !MessageProcessing.isAddNewUser)
+      {
+        LogError($"У пользователя {update.Message.From.LastName} {update.Message.From.FirstName} нет прав для управления.");
+        await TelegramBotHandler.SendMessageAsync(botClient, chatId, "У вас нет доступа к управлению данными");
+        return;
+      }
+
       if (update.Type == UpdateType.Message && update.Message?.Text != null)
       {
         await MessageProcessing.HandleMessageAsync(botClient, update.Message, cancellationToken);
@@ -74,14 +84,31 @@ namespace AutoTrack.Telegram
       var greeting = TimeGreeting.GetGreeting();
       StringBuilder sb = new StringBuilder();
       sb.AppendLine($"{greeting}. Выберите функцию:");
-      sb.AppendLine("/select - Выбор пользователя для просмотра работы.");
+      sb.AppendLine("/help - Помощь по командам.");
+
+      sb.AppendLine("\r\nПоиск по данным:");
       sb.AppendLine("/search - Поиск работы по параметрам.");
+
+      sb.AppendLine("\r\nРабота с данными клиента:");
+      sb.AppendLine("/select - Выбор пользователя для просмотра работы.");
+      sb.AppendLine("/addClient - Добавление нового клиента.");
+      sb.AppendLine("/deleteClient - Удаление клиента.");
+      sb.AppendLine("/editClient - Редоктирование данных клиента.");
+
+      if (chatId == ApplicationData.ConfigApp.AdminId)
+      {
+        sb.AppendLine("\r\nФункции администратора:");
+        sb.AppendLine("/change - Смена администратора.");
+        sb.AppendLine("/addUser- Добавление пользователя.");
+        sb.AppendLine("/log- получает логи.");
+      }
+
       if (messageId != -1)
       {
         await SendMessageAsync(botClient, chatId, sb.ToString(), null, messageId);
       }
       else
-      { 
+      {
         await SendMessageAsync(botClient, chatId, sb.ToString());
       }
     }

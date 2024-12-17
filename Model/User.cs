@@ -1,8 +1,11 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
 namespace AutoTrack.Model
 {
-  /// <summary>
-  /// Представляет пользователя системы.
-  /// </summary>
   public class User
   {
     /// <summary>
@@ -11,13 +14,8 @@ namespace AutoTrack.Model
     public int Id { get; set; }
 
     /// <summary>
-    /// Имя пользователя.
+    /// Уникальный идентификатор пользователя.
     /// </summary>
-    public string Name { get; set; }
-
-    /// <summary>
-    /// Дата создания пользователя.
-    /// </summary>
-    public DateTime Created { get; set; }
+    public long ChatId { get; set; }
   }
 }

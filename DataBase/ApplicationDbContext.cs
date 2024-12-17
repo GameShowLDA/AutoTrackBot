@@ -17,6 +17,11 @@ namespace AutoTrack.DataBase
     public DbSet<User> Users { get; set; }
 
     /// <summary>
+    /// Таблица клиентов.
+    /// </summary>
+    public DbSet<Client> Clients { get; set; }
+
+    /// <summary>
     /// Таблица автомобилей.
     /// </summary>
     public DbSet<Car> Cars { get; set; }
@@ -66,7 +71,7 @@ namespace AutoTrack.DataBase
         {
           LogInfo("Подключение к базе данных успешно.");
 
-          var tablesExist = Users.Any() || Cars.Any() || Works.Any();
+          var tablesExist = Clients.Any() || Cars.Any() || Works.Any();
           if (tablesExist)
           {
             LogInfo("Все таблицы существуют и доступны.");
