@@ -8,6 +8,8 @@ using Telegram.Bot;
 using AutoTrack.Config;
 using AutoTrack.TelegramBot.Function;
 using AutoTrack.TelegramBot.Function.Admin;
+using AutoTrack.TelegramBot.Function.ClientData;
+using AutoTrack.TelegramBot.Function.CarData;
 
 namespace AutoTrack.TelegramBot
 {
@@ -46,9 +48,19 @@ namespace AutoTrack.TelegramBot
               await AddWork.ProcessAddWorkAsync(client, query);
             }
           },
+
           { "/deleteClient", DeleteClient.RequestDeleteConfirmationAsync},
+          { "/editClient", EditClientData.RequestNewClientNameAsync},
           { "/confirmDeleteClient_id", DeleteClient.HandleDeleteConfirmationAsync},
           { "/cancelDeleteClient", DeleteClient.HandleDeleteConfirmationAsync},
+
+          { "/deleteCar_Client", DeleteCar.DisplayCarAsync},
+          { "/deleteCar_", DeleteCar.HandleDeleteConfirmationAsync},
+          { "/addCar_clienId", AddCar.RegisterNewCar },
+
+          { "/editCar_Client_id", EditCar.DisplayCarAsync },
+          { "/editCar_id", EditCar.DisplayPropertyCarAsync },
+          { "/editCarProperty_", EditCar.HandlePropertySelectionAsync },
         };
 
       foreach (var handler in handlers)

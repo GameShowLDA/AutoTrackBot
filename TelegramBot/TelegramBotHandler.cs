@@ -93,7 +93,12 @@ namespace AutoTrack.TelegramBot
       sb.AppendLine("/select - Выбор пользователя для просмотра работы.");
       sb.AppendLine("/addClient - Добавление нового клиента.");
       sb.AppendLine("/deleteClient - Удаление клиента.");
-      sb.AppendLine("/editClient - Редоктирование данных клиента.");
+      sb.AppendLine("/editClient - Редактирование данных клиента.");
+
+      sb.AppendLine("\r\nРабота с данными авто:");
+      sb.AppendLine("/addCar - Добавление нового автомобиля.");
+      sb.AppendLine("/deleteCar - Удаление автомобиля.");
+      sb.AppendLine("/editCar - Редактирование данных автомобиля.");
 
       if (chatId == ApplicationData.ConfigApp.AdminId)
       {

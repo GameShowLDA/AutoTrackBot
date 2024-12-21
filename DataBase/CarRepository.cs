@@ -37,6 +37,18 @@ namespace AutoTrack.DataBase
     }
 
     /// <summary>
+    /// Получает автомобили по идентификатору машины.
+    /// </summary>
+    /// <param name="carId">Идентификатор пользователя.</param>
+    /// <returns>Список автомобилей.</returns>
+    public Car GetCarByCarId(int carId)
+    {
+      return ApplicationData.DbContext.Cars
+          .Where(c => c.Id == carId)
+          .ToList().First();
+    }
+
+    /// <summary>
     /// Добаввляет новый автомобиль в базу данных.
     /// </summary>
     /// <param name="car">Объект автомобиля для добавления.</param>
@@ -51,6 +63,43 @@ namespace AutoTrack.DataBase
       var cars = ApplicationData.DbContext.Cars.Where(c => c.UserId == clientId).ToList();
       ApplicationData.DbContext.Cars.RemoveRange(cars);
       ApplicationData.DbContext.SaveChanges();
+    }
+
+    public void DeleteCarByCarId(int carId)
+    {
+      var car = GetCarByCarId(carId);
+      ApplicationData.DbContext.Cars.RemoveRange(car);
+      ApplicationData.DbContext.SaveChanges();
+    }
+
+    public void UpdateCarProperty(int carId, string property, string newValue)
+    {
+      var car = GetCarByCarId(carId);
+      if (car != null)
+      {
+        switch (property)
+        {
+          case "Brand":
+            car.Brand = newValue;
+            break;
+          case "Model":
+            car.Model = newValue;
+            break;
+          case "Number":
+            car.Number = newValue;
+            break;
+          case "Vin":
+            car.Vin = newValue;
+            break;
+          case "Mileage":
+            if (int.TryParse(newValue, out int mileage))
+            {
+              car.Mileage = mileage;
+            }
+            break;
+        }
+        ApplicationData.DbContext.SaveChanges();
+      }
     }
   }
 }

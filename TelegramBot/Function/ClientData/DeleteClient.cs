@@ -9,7 +9,7 @@ using Telegram.Bot.Types;
 using Telegram.Bot;
 using AutoTrack.Model;
 
-namespace AutoTrack.TelegramBot.Function
+namespace AutoTrack.TelegramBot.Function.ClientData
 {
   internal class DeleteClient
   {
@@ -69,6 +69,7 @@ namespace AutoTrack.TelegramBot.Function
         {
             new CallbackModel("На главную", "/start"),
         };
+
       if (callbackQuery.Data.StartsWith("/confirmDeleteClient_id"))
       {
         var clientIdString = callbackQuery.Data.Replace("/confirmDeleteClient_id", "");

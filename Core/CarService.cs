@@ -45,6 +45,20 @@ namespace AutoTrack.Core
       return cars;
     }
 
+
+    /// <summary>
+    /// Получает автомобиль по идентификатору автомобиля.
+    /// </summary>
+    /// <param name="userId">Идентификатор пользователя.</param>
+    /// <returns>Список автомобилей.</returns>
+    public static Car GetCarsByCarId(int carId)
+    {
+      var car = _carRepository.GetCarByCarId(carId);
+      LogInfo($"Брэнд машины: {car.Brand}, Модель: {car.Model}, Номер: {car.Number}, VIN: {car.Vin}, Пробег: {car.Mileage}");
+
+      return car;
+    }
+
     /// <summary>
     /// Добовляет новый автомобиль в систему.
     /// </summary>
@@ -59,6 +73,18 @@ namespace AutoTrack.Core
     {
       _carRepository.DeleteCarsByClientId(clientId);
       LogInfo($"Автомобили клиента с ID: {clientId} успешно удалены.");
+    }
+
+    public static void DeleteCarByCarId(int carId)
+    {
+      _carRepository.DeleteCarByCarId(carId);
+      LogInfo($"Автомобили клиента с ID: {carId} успешно удалены.");
+    }
+
+    public static void UpdateCarProperty(int carId, string property, string newValue)
+    {
+      _carRepository.UpdateCarProperty(carId, property, newValue);
+      LogInfo($"Обновлено свойство {property} для автомобиля с ID: {carId}");
     }
   }
 }

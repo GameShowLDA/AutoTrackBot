@@ -6,7 +6,7 @@ using Telegram.Bot;
 using Telegram.Bot.Types;
 using static AutoTrack.Config.Logger;
 
-namespace AutoTrack.TelegramBot.Function
+namespace AutoTrack.TelegramBot.Function.ClientData
 {
   /// <summary>
   /// Класс для отображения существующих пользователей в базе данных.
@@ -88,12 +88,20 @@ namespace AutoTrack.TelegramBot.Function
       {
         var works = WorkService.GetWorksByCarId(carId);
         StringBuilder sb = new StringBuilder();
-        foreach (var work in works)
+
+        if (works.Count > 1)
         {
-          sb.AppendLine($"Работа: {work.Description}");
-          sb.AppendLine($"Сумма: {work.Summ}");
-          sb.AppendLine($"Дата: {work.Date}");
-          sb.AppendLine(string.Empty);
+          foreach (var work in works)
+          {
+            sb.AppendLine($"Работа: {work.Description}");
+            sb.AppendLine($"Сумма: {work.Summ}");
+            sb.AppendLine($"Дата: {work.Date}");
+            sb.AppendLine(string.Empty);
+          }
+        }
+        else
+        {
+          sb.AppendLine($"По данной машине не производилось работ.");
         }
 
         var callbackModels = new List<CallbackModel>

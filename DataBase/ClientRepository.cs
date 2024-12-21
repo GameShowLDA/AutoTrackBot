@@ -84,5 +84,20 @@ namespace AutoTrack.DataBase
           .Split(' ', StringSplitOptions.RemoveEmptyEntries)
           .OrderBy(part => part));
     }
+
+    /// <summary>
+    /// Изменяет имя клиента в базе данных.
+    /// </summary>
+    /// <param name="clientId">Идентификатор клиента.</param>
+    /// <param name="newName">Новое имя клиента.</param>
+    public void UpdateClientName(int clientId, string newName)
+    {
+      var client = ApplicationData.DbContext.Clients.Find(clientId);
+      if (client != null)
+      {
+        client.Name = newName;
+        ApplicationData.DbContext.SaveChanges();
+      }
+    }
   }
 }

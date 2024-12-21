@@ -8,7 +8,7 @@ using Telegram.Bot.Types;
 using Telegram.Bot;
 using AutoTrack.Core;
 
-namespace AutoTrack.TelegramBot.Function
+namespace AutoTrack.TelegramBot.Function.ClientData
 {
   static internal class AddClient
   {

@@ -11,6 +11,8 @@ using AutoTrack.Utils;
 using AutoTrack.TelegramBot.Function;
 using static AutoTrack.Config.Logger;
 using AutoTrack.TelegramBot.Function.Admin;
+using AutoTrack.TelegramBot.Function.ClientData;
+using AutoTrack.TelegramBot.Function.CarData;
 
 namespace AutoTrack.TelegramBot
 {
@@ -24,6 +26,9 @@ namespace AutoTrack.TelegramBot
     internal static bool searchData = false;
     internal static bool addWork = false;
     internal static bool addClient = false;
+    internal static bool editClient = false;
+    internal static bool addCar= false;
+    internal static bool editCar= false;
 
     /// <summary>
     /// Обрабатывает входящие сообщения от пользователей.
@@ -36,6 +41,18 @@ namespace AutoTrack.TelegramBot
       var chatId = message.From.Id;
       var messageText = message.Text.ToLower();
       LogInfo($"Сообщение от {message.From.LastName} {message.From.FirstName} - {message.Text}");
+
+      if (messageText.StartsWith("/start"))
+      {
+        isWaitingForNewAdmin = false;
+        isAddNewUser = false;
+        searchData = false;
+        addWork = false;
+        addClient = false;
+        editClient = false;
+        addCar = false;
+        editCar = false;
+      }
 
       if (isWaitingForNewAdmin && chatId != ApplicationData.ConfigApp.AdminId)
       {
@@ -64,8 +81,26 @@ namespace AutoTrack.TelegramBot
       }
 
       if (addClient)
-      { 
+      {
         await AddClient.HandleClientNameInputAsync(botClient, message);
+        return;
+      }
+
+      if (editClient)
+      {
+        await EditClientData.HandleNewClientNameAsync(botClient, message);
+        return;
+      }
+
+      if (addCar)
+      { 
+        await AddCar.RegisterNewCar(botClient, message);
+        return;
+      }
+
+      if (editCar)
+      {
+        await EditCar.UpdateCarPropertyAsync(botClient, message);
         return;
       }
 
@@ -76,8 +111,14 @@ namespace AutoTrack.TelegramBot
         { "/select", async () => await UserSelector.DisplayUsersAsync(botClient, chatId, message) },
         { "/search", async () => await EntityPropertyViewer.DisplayPropertyButtonsAsync(botClient, chatId) },
         { "/help", async () => { await TelegramBotHandler.StartMessageAsync(botClient, chatId); }},
+
         { "/addclient", async () => { addClient = true; await TelegramBotHandler.SendMessageAsync(botClient, chatId, "Введите ФИО нового клиента:"); } },
         { "/deleteclient", async () => { await DeleteClient.DisplayClientsAsync(botClient, chatId); }},
+        { "/editclient", async () => { await EditClientData.DisplayClientsAsync(botClient, chatId); }},
+
+        { "/editcar", async () => { await EditCar.DisplayClientsAsync(botClient, chatId); }},
+        { "/deletecar", async () => { await DeleteCar.DisplayClientsAsync(botClient, chatId); }},
+        { "/addcar", async () => { await AddCar.RegisterNewCar(botClient, message); }},
 
         { "/change", async () => { if (chatId != ApplicationData.ConfigApp.AdminId) { await SendAccessDeniedMessageAsync(botClient, chatId); return; } isWaitingForNewAdmin = true; await TelegramBotHandler.SendMessageAsync(botClient, chatId, "Отправьте сообщение от пользователя, которого хотите сделать администратором."); } },
         { "/adduser", async () => { if (chatId != ApplicationData.ConfigApp.AdminId) { await SendAccessDeniedMessageAsync(botClient, chatId); return; } isAddNewUser = true; await TelegramBotHandler.SendMessageAsync(botClient, chatId, "Отправьте сообщение от пользователя, которого хотите добавить в систему."); } },

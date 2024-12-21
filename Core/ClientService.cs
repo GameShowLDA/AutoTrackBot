@@ -1,5 +1,6 @@
 ﻿using AutoTrack.DataBase;
 using AutoTrack.Model;
+using AutoTrack.TelegramBot.Function;
 using System.Collections.Generic;
 using static AutoTrack.Config.Logger;
 
@@ -82,6 +83,25 @@ namespace AutoTrack.Core
       else
       {
         LogError($"Клиент с ID: {Id} не найден в БД.");
+      }
+    }
+
+    /// <summary>
+    /// Обновляет имя клиента в системе.
+    /// </summary>
+    /// <param name="clientId">Идентификатор клиента.</param>
+    /// <param name="newName">Новое имя клиента.</param>
+    public static void UpdateClientName(int clientId, string newName)
+    {
+      var client = _clientRepository.GetClientById(clientId);
+      if (client != null)
+      {
+        _clientRepository.UpdateClientName(clientId, newName);
+        LogInfo($"Имя клиента с ID: {clientId} успешно обновлено на {newName}.");
+      }
+      else
+      {
+        LogError($"Клиент с ID: {clientId} не найден в БД.");
       }
     }
   }
